@@ -1,10 +1,10 @@
 variable "environment" {
-  description = "Entorno: dev, qa o prod."
+  description = "Entorno: dev, qa, prod o bootstrap (etapa 0)."
   type        = string
 
   validation {
-    condition     = contains(["dev", "qa", "prod"], var.environment)
-    error_message = "environment debe ser dev, qa o prod."
+    condition     = contains(["dev", "qa", "prod", "bootstrap"], var.environment)
+    error_message = "environment debe ser dev, qa, prod o bootstrap."
   }
 }
 
@@ -19,12 +19,24 @@ variable "domain" {
 }
 
 variable "name_suffix" {
-  description = "Sufijo del ID del proyecto (banorte-<entorno>-<dominio>-<name_suffix>)."
+  description = "Sufijo del ID del proyecto (banorte-<entorno>-<dominio>-<name_suffix>). Requerido si project_id es null."
   type        = string
+  default     = null
 
   validation {
-    condition     = can(regex("^[a-z0-9][a-z0-9-]{0,8}[a-z0-9]$|^[a-z0-9]$", var.name_suffix))
+    condition     = var.name_suffix == null || can(regex("^[a-z0-9][a-z0-9-]{0,8}[a-z0-9]$|^[a-z0-9]$", coalesce(var.name_suffix, "x")))
     error_message = "name_suffix debe tener 1-10 caracteres: minúsculas, dígitos o guiones, sin guion al inicio ni al final."
+  }
+}
+
+variable "project_id" {
+  description = "ID explícito del proyecto (p. ej. banorte-bootstrap-seed). null compone banorte-<entorno>-<dominio>-<name_suffix>."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.project_id == null || can(regex("^banorte-[a-z0-9-]{1,21}[a-z0-9]$", coalesce(var.project_id, "x")))
+    error_message = "project_id debe empezar con banorte-, tener como máximo 30 caracteres y usar minúsculas, dígitos o guiones."
   }
 }
 

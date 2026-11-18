@@ -67,10 +67,11 @@ No modules.
 | <a name="input_deletion_policy"></a> [deletion\_policy](#input\_deletion\_policy) | Política de borrado del proyecto: PREVENT, ABANDON o DELETE. | `string` | `"PREVENT"` | no |
 | <a name="input_domain"></a> [domain](#input\_domain) | Dominio funcional usado en los nombres (banorte-<entorno>-<dominio>-<recurso>). | `string` | n/a | yes |
 | <a name="input_enable_budget"></a> [enable\_budget](#input\_enable\_budget) | Crea un presupuesto de facturación para el proyecto. | `bool` | `false` | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | Entorno: dev, qa o prod. | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Entorno: dev, qa, prod o bootstrap (etapa 0). | `string` | n/a | yes |
 | <a name="input_folder_id"></a> [folder\_id](#input\_folder\_id) | Carpeta destino: ID numérico o folders/<id>. | `string` | n/a | yes |
 | <a name="input_labels"></a> [labels](#input\_labels) | Etiquetas obligatorias: env, app, owner, cost\_center. managed\_by se fuerza a terraform. | `map(string)` | n/a | yes |
-| <a name="input_name_suffix"></a> [name\_suffix](#input\_name\_suffix) | Sufijo del ID del proyecto (banorte-<entorno>-<dominio>-<name\_suffix>). | `string` | n/a | yes |
+| <a name="input_name_suffix"></a> [name\_suffix](#input\_name\_suffix) | Sufijo del ID del proyecto (banorte-<entorno>-<dominio>-<name\_suffix>). Requerido si project\_id es null. | `string` | `null` | no |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | ID explícito del proyecto (p. ej. banorte-bootstrap-seed). null compone banorte-<entorno>-<dominio>-<name\_suffix>. | `string` | `null` | no |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Nombre visible del proyecto. null usa el ID. | `string` | `null` | no |
 | <a name="input_shared_vpc_host_project_id"></a> [shared\_vpc\_host\_project\_id](#input\_shared\_vpc\_host\_project\_id) | Proyecto host de Shared VPC. null no adjunta el proyecto como servicio. | `string` | `null` | no |
 

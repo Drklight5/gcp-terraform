@@ -9,12 +9,12 @@ variable "project_id" {
 }
 
 variable "environment" {
-  description = "Entorno: dev, qa o prod."
+  description = "Entorno: dev, qa, prod o bootstrap (etapa 0)."
   type        = string
 
   validation {
-    condition     = contains(["dev", "qa", "prod"], var.environment)
-    error_message = "environment debe ser dev, qa o prod."
+    condition     = contains(["dev", "qa", "prod", "bootstrap"], var.environment)
+    error_message = "environment debe ser dev, qa, prod o bootstrap."
   }
 }
 

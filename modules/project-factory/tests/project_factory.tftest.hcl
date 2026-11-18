@@ -111,3 +111,35 @@ run "rechaza_billing_invalido" {
 
   expect_failures = [var.billing_account]
 }
+
+run "project_id_explicito_bootstrap" {
+  command = plan
+
+  variables {
+    environment = "bootstrap"
+    domain      = "seed"
+    name_suffix = null
+    project_id  = "banorte-bootstrap-seed"
+    labels = {
+      env         = "bootstrap"
+      app         = "landing-zone"
+      owner       = "equipo-plataforma"
+      cost_center = "0000"
+    }
+  }
+
+  assert {
+    condition     = google_project.this.project_id == "banorte-bootstrap-seed" && google_project.this.labels["env"] == "bootstrap"
+    error_message = "El ID explícito o la etiqueta env no se aplicaron."
+  }
+}
+
+run "rechaza_sin_id_ni_sufijo" {
+  command = plan
+
+  variables {
+    name_suffix = null
+  }
+
+  expect_failures = [google_project.this]
+}

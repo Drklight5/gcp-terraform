@@ -1,13 +1,5 @@
 # Copiar a terraform.tfvars y completar. No incluir secretos: se leen de Secret Manager.
 org_id          = "000000000000"
 billing_account = "000000-000000-000000"
-environment     = "dev"            # dev | qa | prod
-primary_region  = "us-central1"
-dr_region       = "us-east4"
-labels = {
-  env        = "dev"
-  app        = "landing-zone"
-  owner      = "equipo-plataforma"
-  cost_center = "0000"
-  managed_by = "terraform"
-}
+github_repo     = "owner/repo"
+region          = "us-central1" # us-central1 | us-east4

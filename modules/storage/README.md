@@ -56,7 +56,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_domain"></a> [domain](#input\_domain) | Dominio funcional usado en los nombres (banorte-<entorno>-<dominio>-<recurso>). | `string` | n/a | yes |
-| <a name="input_environment"></a> [environment](#input\_environment) | Entorno: dev, qa o prod. | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Entorno: dev, qa, prod o bootstrap (etapa 0). | `string` | n/a | yes |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | Permite eliminar el bucket aunque contenga objetos. | `bool` | `false` | no |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | Llave CMEK (projects/<p>/locations/<l>/keyRings/<kr>/cryptoKeys/<k>). Debe estar en la misma región que el bucket. | `string` | n/a | yes |
 | <a name="input_labels"></a> [labels](#input\_labels) | Etiquetas obligatorias: env, app, owner, cost\_center. managed\_by se fuerza a terraform. | `map(string)` | n/a | yes |

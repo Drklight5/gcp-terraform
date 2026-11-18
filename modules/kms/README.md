@@ -55,7 +55,7 @@ No modules.
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_domain"></a> [domain](#input\_domain) | Dominio funcional usado en los nombres (banorte-<entorno>-<dominio>-<recurso>). | `string` | n/a | yes |
 | <a name="input_encrypter_decrypter_members"></a> [encrypter\_decrypter\_members](#input\_encrypter\_decrypter\_members) | Cuentas de servicio con roles/cloudkms.cryptoKeyEncrypterDecrypter (formato serviceAccount:<email>). | `list(string)` | `[]` | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | Entorno: dev, qa o prod. | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Entorno: dev, qa, prod o bootstrap (etapa 0). | `string` | n/a | yes |
 | <a name="input_key_name"></a> [key\_name](#input\_key\_name) | Sufijo del nombre de la llave (banorte-<entorno>-<dominio>-<key\_name>). | `string` | `"key"` | no |
 | <a name="input_labels"></a> [labels](#input\_labels) | Etiquetas obligatorias: env, app, owner, cost\_center. managed\_by se fuerza a terraform. | `map(string)` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | Región del key ring: us-central1 (primaria) o us-east4 (DR). | `string` | `"us-central1"` | no |

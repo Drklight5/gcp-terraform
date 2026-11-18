@@ -1,5 +1,8 @@
 locals {
-  project_id = "banorte-${var.environment}-${var.domain}-${var.name_suffix}"
+  project_id = (
+    var.project_id != null ? var.project_id :
+    var.name_suffix != null ? "banorte-${var.environment}-${var.domain}-${var.name_suffix}" : ""
+  )
 
   labels = merge(var.labels, {
     env        = var.environment
@@ -19,6 +22,11 @@ resource "google_project" "this" {
   deletion_policy     = var.deletion_policy
 
   lifecycle {
+    precondition {
+      condition     = local.project_id != ""
+      error_message = "Se requiere project_id o name_suffix."
+    }
+
     precondition {
       condition     = length(local.project_id) <= 30
       error_message = "El ID del proyecto excede 30 caracteres."

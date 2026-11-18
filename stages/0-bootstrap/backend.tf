@@ -1,6 +1,10 @@
-terraform {
-  # Configuración parcial: el bucket del proyecto semilla y el prefijo
-  # se pasan en init, por ejemplo:
-  #   terraform init -backend-config="bucket=<bucket-semilla>" -backend-config="prefix=<etapa>/<entorno>"
-  backend "gcs" {}
-}
+# Primera ejecución: backend local (terraform.tfstate, ignorado por git).
+# Migración tras crear el bucket: descomentar y ejecutar
+#   terraform init -migrate-state
+#
+# terraform {
+#   backend "gcs" {
+#     bucket = "banorte-bootstrap-seed-tfstate"
+#     prefix = "0-bootstrap"
+#   }
+# }
