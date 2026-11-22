@@ -1,0 +1,101 @@
+name: pr-validate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0  # Historial completo para que git diff compare contra el SHA base.
+
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "~> 1.16.0"
+          terraform_wrapper: false  # Ejecuta terraform directamente, sin el wrapper del action.
+
+      - uses: terraform-linters/setup-tflint@90f302c255ef959cbfb4bd10581afecdb7ece3e6 # v4.1.1
+
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Instalar checkov
+        run: pip install checkov==3.4.6
+
+      - name: Detectar carpetas modificadas
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Lista las carpetas de módulo, etapa o entorno tocadas. Omite archivos borrados (--diff-filter=d).
+          git diff --name-only --diff-filter=d "$BASE_SHA"..."$HEAD_SHA" \
+            | sed -nE 's#^(modules/[^/]+|stages/[^/]+/envs/[^/]+|stages/[^/]+)/.*#\1#p' \
+            | sort -u > changed_dirs.txt
+          : > validate_dirs.txt
+          while read -r d; do
+            if [ -d "$d" ] && ls "$d"/*.tf >/dev/null 2>&1; then
+              echo "$d" >> validate_dirs.txt
+            fi
+          done < changed_dirs.txt
+          echo "Carpetas a validar:"
+          cat validate_dirs.txt
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: terraform init y validate
+        if: ${{ !cancelled() }}
+        run: |
+          rc=0
+          while read -r d; do
+            echo "::group::$d"
+            terraform -chdir="$d" init -backend=false -input=false || rc=1
+            terraform -chdir="$d" validate || rc=1
+            echo "::endgroup::"
+          done < validate_dirs.txt
+          exit $rc
+
+      - name: terraform test (módulos)
+        if: ${{ !cancelled() }}
+        run: |
+          rc=0
+          while read -r d; do
+            if ls "$d"/tests/*.tftest.hcl >/dev/null 2>&1; then
+              echo "::group::$d"
+              terraform -chdir="$d" test || rc=1
+              echo "::endgroup::"
+            fi
+          done < <(grep '^modules/' validate_dirs.txt || true)
+          exit $rc
+
+      - name: tflint
+        if: ${{ !cancelled() }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          rc=0
+          tflint --init --config="$GITHUB_WORKSPACE/.tflint.hcl" || rc=1
+          while read -r d; do
+            echo "::group::$d"
+            tflint --config="$GITHUB_WORKSPACE/.tflint.hcl" --chdir="$d" || rc=1
+            echo "::endgroup::"
+          done < validate_dirs.txt
+          exit $rc
+
+      - name: checkov
+        if: ${{ !cancelled() }}
+        run: |
+          rc=0
+          while read -r d; do
+            echo "::group::$d"
+            checkov --directory "$d" --framework terraform || rc=1
+            echo "::endgroup::"
+          done < validate_dirs.txt
+          exit $rc
