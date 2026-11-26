@@ -1,16 +1,33 @@
 provider "google" {
-  region = var.region
+  region                = var.region
+  user_project_override = true
+  billing_project       = var.seed_project_id
+}
+
+provider "google-beta" {
+  region                = var.region
+  user_project_override = true
+  billing_project       = var.seed_project_id
 }
 
 locals {
-  seed_project_id = "banorte-bootstrap-seed"
-
   labels = {
     env         = "bootstrap"
     app         = "landing-zone"
     owner       = "equipo-plataforma"
     cost_center = "0000"
   }
+}
+
+# Carpeta y proyecto semilla creados a mano: se importan.
+import {
+  to = google_folder.bootstrap
+  id = "folders/${var.bootstrap_folder_id}"
+}
+
+import {
+  to = module.seed_project.google_project.this
+  id = var.seed_project_id
 }
 
 resource "google_folder" "bootstrap" {
@@ -24,7 +41,7 @@ module "seed_project" {
 
   environment     = "bootstrap"
   domain          = "seed"
-  project_id      = local.seed_project_id
+  project_id      = var.seed_project_id
   folder_id       = google_folder.bootstrap.folder_id
   billing_account = var.billing_account
   labels          = local.labels

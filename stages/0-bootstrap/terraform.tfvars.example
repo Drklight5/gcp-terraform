@@ -1,5 +1,7 @@
 # Copiar a terraform.tfvars y completar. No incluir secretos: se leen de Secret Manager.
-org_id          = "000000000000"
-billing_account = "000000-000000-000000"
-github_repo     = "owner/repo"
-region          = "us-central1" # us-central1 | us-east4
+org_id              = "000000000000"
+bootstrap_folder_id = "000000000000" # sin el prefijo folders/
+seed_project_id     = "banorte-bootstrap-seed"
+billing_account     = "000000-000000-000000"
+github_repo         = "owner/repo"
+region              = "us-central1" # us-central1 | us-east4
