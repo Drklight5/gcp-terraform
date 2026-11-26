@@ -8,6 +8,27 @@ variable "org_id" {
   }
 }
 
+variable "bootstrap_folder_id" {
+  description = "ID numérico de la carpeta bootstrap existente, sin el prefijo folders/."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[0-9]{6,20}$", var.bootstrap_folder_id))
+    error_message = "bootstrap_folder_id debe ser numérico, sin el prefijo folders/."
+  }
+}
+
+variable "seed_project_id" {
+  description = "ID del proyecto semilla existente."
+  type        = string
+  default     = "banorte-bootstrap-seed"
+
+  validation {
+    condition     = can(regex("^banorte-[a-z0-9-]{1,21}[a-z0-9]$", var.seed_project_id))
+    error_message = "seed_project_id debe empezar con banorte-, tener como máximo 30 caracteres y usar minúsculas, dígitos o guiones."
+  }
+}
+
 variable "billing_account" {
   description = "Cuenta de facturación del proyecto semilla (XXXXXX-XXXXXX-XXXXXX)."
   type        = string

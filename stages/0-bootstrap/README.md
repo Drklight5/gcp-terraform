@@ -2,7 +2,7 @@
 
 Crea la base sobre la que corren las demás etapas:
 
-- Carpeta `bootstrap` bajo la organización y proyecto semilla `banorte-bootstrap-seed` (módulo `project-factory`).
+- Carpeta `bootstrap` y proyecto semilla `banorte-bootstrap-seed` (módulo `project-factory`): ya existen y se importan.
 - Llave KMS `banorte-bootstrap-seed-tfstate` y bucket de estado `banorte-bootstrap-seed-tfstate` con CMEK (módulos `kms` y `storage`).
 - Cinco cuentas de servicio de Terraform, una por etapa, con roles mínimos y acceso al bucket por prefijo.
 - Workload Identity Federation para GitHub Actions, restringida a `var.github_repo`.
@@ -19,7 +19,9 @@ terraform plan
 
 La primera ejecución usa backend local. Tras crear el bucket, descomentar el bloque `gcs` de `backend.tf` y ejecutar `terraform init -migrate-state`.
 
-El ID `banorte-bootstrap-seed` es global en GCP; si ya existe, la creación del proyecto falla.
+Los bloques `import` usan `bootstrap_folder_id` (`folders/<ID>`) y `seed_project_id`. Revisar en el plan los cambios sobre ambos recursos antes de aplicar.
+
+Los proveedores usan `user_project_override = true` con el proyecto semilla como `billing_project`: las APIs consultadas deben estar habilitadas en él antes del primer plan.
 
 ## Estado por prefijo
 
@@ -123,9 +125,11 @@ Sin roles en la organización. `4-projects` le otorga `roles/editor` solo en cad
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_billing_account"></a> [billing\_account](#input\_billing\_account) | Cuenta de facturación del proyecto semilla (XXXXXX-XXXXXX-XXXXXX). | `string` | n/a | yes |
+| <a name="input_bootstrap_folder_id"></a> [bootstrap\_folder\_id](#input\_bootstrap\_folder\_id) | ID numérico de la carpeta bootstrap existente, sin el prefijo folders/. | `string` | n/a | yes |
 | <a name="input_github_repo"></a> [github\_repo](#input\_github\_repo) | Repositorio de GitHub autorizado en Workload Identity Federation (<owner>/<repo>). | `string` | n/a | yes |
 | <a name="input_org_id"></a> [org\_id](#input\_org\_id) | ID numérico de la organización. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Región de la llave KMS y del bucket de estado: us-central1 (primaria) o us-east4 (DR). | `string` | `"us-central1"` | no |
+| <a name="input_seed_project_id"></a> [seed\_project\_id](#input\_seed\_project\_id) | ID del proyecto semilla existente. | `string` | `"banorte-bootstrap-seed"` | no |
 
 ## Outputs
 

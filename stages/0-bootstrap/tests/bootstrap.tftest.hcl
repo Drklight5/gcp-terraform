@@ -2,11 +2,24 @@ mock_provider "google" {}
 
 mock_provider "google-beta" {}
 
+# Los proveedores simulados no importan: se sustituyen los recursos importados.
+override_resource {
+  target = google_folder.bootstrap
+  values = {
+    folder_id = "210987654321"
+  }
+}
+
+override_resource {
+  target = module.seed_project.google_project.this
+}
+
 variables {
-  org_id          = "123456789012"
-  billing_account = "0A0A0A-0B0B0B-0C0C0C"
-  github_repo     = "mi-org/gcp-terraform"
-  region          = "us-central1"
+  org_id              = "123456789012"
+  bootstrap_folder_id = "210987654321"
+  billing_account     = "0A0A0A-0B0B0B-0C0C0C"
+  github_repo         = "mi-org/gcp-terraform"
+  region              = "us-central1"
 }
 
 run "nombres_y_cmek" {
@@ -96,6 +109,26 @@ run "wif_solo_repositorio" {
     condition     = google_iam_workload_identity_pool_provider.github.oidc[0].issuer_uri == "https://token.actions.githubusercontent.com"
     error_message = "Issuer OIDC incorrecto."
   }
+}
+
+run "rechaza_carpeta_con_prefijo" {
+  command = plan
+
+  variables {
+    bootstrap_folder_id = "folders/210987654321"
+  }
+
+  expect_failures = [var.bootstrap_folder_id]
+}
+
+run "rechaza_proyecto_invalido" {
+  command = plan
+
+  variables {
+    seed_project_id = "otro-proyecto"
+  }
+
+  expect_failures = [var.seed_project_id]
 }
 
 run "rechaza_repo_invalido" {
